@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Setter
-@Accessors(chain = true)
 public class ProductCreateResDTO {
 
     private Long id;
