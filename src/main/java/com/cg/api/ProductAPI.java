@@ -7,6 +7,7 @@ import com.cg.service.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ public class ProductAPI {
     private IProductService productService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> create(ProductCreateReqDTO productCreateReqDTO) {
 
         ProductCreateResDTO productCreateResDTO = productService.create(productCreateReqDTO);
