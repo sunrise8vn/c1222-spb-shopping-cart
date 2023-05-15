@@ -23,10 +23,12 @@ public class CartItem extends BaseEntity {
 
     private String productTitle;
 
+    @Column(precision = 10, scale = 0, nullable = false)
     private BigDecimal price;
 
     private Integer quantity;
 
+    @Column(precision = 12, scale = 0, nullable = false)
     private BigDecimal amount;
 
     @ManyToOne
@@ -36,4 +38,16 @@ public class CartItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "id", nullable = false)
     private Cart cart;
+
+    public BillDetail toBillDetail(Bill bill) {
+        return new BillDetail()
+                .setId(id)
+                .setBill(bill)
+                .setProductTitle(productTitle)
+                .setPrice(price)
+                .setQuantity(quantity)
+                .setAmount(amount)
+                ;
+
+    }
 }

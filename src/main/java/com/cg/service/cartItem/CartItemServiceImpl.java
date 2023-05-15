@@ -44,14 +44,24 @@ public class CartItemServiceImpl implements ICartItemService {
     }
 
     @Override
+    public List<CartItem> findAllByCartAndCustomer(Cart cart, Customer customer) {
+        return cartItemRepository.findAllByCartAndCustomer(cart, customer);
+    }
+
+    @Override
+    public List<CartItemResDTO> findAllCartItemResDTOByCart(Cart cart) {
+        return cartItemRepository.findAllCartItemResDTOByCart(cart);
+    }
+
+    @Override
     public CartResDTO create(CartItemReqDTO cartItemReqDTO, Customer customer) {
 
-        Product product = productRepository.findById(cartItemReqDTO.getProductId()).orElseThrow(() -> {
-           throw new DataInputException("Sản phẩm không hợp lệ");
+        Product product = productRepository.findById(Long.parseLong(cartItemReqDTO.getProductId())).orElseThrow(() -> {
+            throw new DataInputException("Sản phẩm không hợp lệ");
         });
 
         BigDecimal productPrice = product.getPrice();
-        Integer quantity = cartItemReqDTO.getQuantity();
+        int quantity = Integer.parseInt(cartItemReqDTO.getQuantity());
         BigDecimal productAmount = productPrice.multiply(BigDecimal.valueOf(quantity));
 
         Cart cart = new Cart();
@@ -80,7 +90,7 @@ public class CartItemServiceImpl implements ICartItemService {
 
     @Override
     public CartResDTO update(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart) {
-        Product product = productRepository.findById(cartItemReqDTO.getProductId()).orElseThrow(() -> {
+        Product product = productRepository.findById(Long.parseLong(cartItemReqDTO.getProductId())).orElseThrow(() -> {
             throw new DataInputException("Sản phẩm không hợp lệ");
         });
 
@@ -88,7 +98,7 @@ public class CartItemServiceImpl implements ICartItemService {
 
         if (cartItemOptional.isEmpty()) {
             BigDecimal productPrice = product.getPrice();
-            Integer quantity = cartItemReqDTO.getQuantity();
+            int quantity = Integer.parseInt(cartItemReqDTO.getQuantity());
             BigDecimal productAmount = productPrice.multiply(BigDecimal.valueOf(quantity));
 
             CartItem cartItem = new CartItem();
@@ -99,13 +109,12 @@ public class CartItemServiceImpl implements ICartItemService {
             cartItem.setQuantity(quantity);
             cartItem.setAmount(productAmount);
             cartItemRepository.save(cartItem);
-        }
-        else {
+        } else {
             CartItem cartItem = cartItemOptional.get();
 
             BigDecimal productPrice = product.getPrice();
             Integer currentQuantity = cartItem.getQuantity();
-            int newQuantity = currentQuantity + cartItemReqDTO.getQuantity();
+            int newQuantity = currentQuantity + Integer.parseInt(cartItemReqDTO.getQuantity());
             BigDecimal newAmount = productPrice.multiply(BigDecimal.valueOf(newQuantity));
 
             cartItem.setPrice(productPrice);
@@ -117,6 +126,9 @@ public class CartItemServiceImpl implements ICartItemService {
         List<CartItemResDTO> cartItemResDTOS = cartItemRepository.findAllCartItemResDTOByCart(cart);
 
         BigDecimal totalAmount = cartItemRepository.getSumAmount(cart);
+
+        cart.setTotalAmount(totalAmount);
+        cartRepository.save(cart);
 
         CartResDTO cartResDTO = new CartResDTO();
         cartResDTO.setTotalAmount(totalAmount);

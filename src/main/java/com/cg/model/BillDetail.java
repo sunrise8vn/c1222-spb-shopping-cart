@@ -23,10 +23,12 @@ public class BillDetail extends BaseEntity {
 
     private String productTitle;
 
-    private String price;
+    @Column(precision = 10, scale = 0, nullable = false)
+    private BigDecimal price;
 
     private Integer quantity;
 
+    @Column(precision = 12, scale = 0, nullable = false)
     private BigDecimal amount;
 
 

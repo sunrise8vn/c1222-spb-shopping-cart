@@ -7,6 +7,7 @@ import com.cg.model.ProductAvatar;
 import com.cg.model.Unit;
 import com.cg.model.dto.ProductCreateReqDTO;
 import com.cg.model.dto.ProductCreateResDTO;
+import com.cg.model.dto.ProductResDTO;
 import com.cg.repository.CategoryRepository;
 import com.cg.repository.ProductAvatarRepository;
 import com.cg.repository.ProductRepository;
@@ -49,6 +50,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Product> findAll() {
         return null;
+    }
+
+    @Override
+    public List<ProductResDTO> getAllProductResDTO() {
+        return productRepository.getAllProductResDTO();
     }
 
     @Override

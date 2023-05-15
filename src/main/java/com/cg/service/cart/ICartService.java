@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface ICartService extends IGeneralService<Cart, Long> {
 
     Optional<Cart> findByCustomer(Customer customer);
+
+    void pay(Cart cart, Customer customer);
 }

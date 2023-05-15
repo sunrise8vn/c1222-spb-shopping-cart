@@ -21,9 +21,18 @@ public class Cart extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 12, scale = 0, nullable = false)
     private BigDecimal totalAmount;
 
     @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", unique = true, nullable = false)
     private Customer customer;
+
+    public Bill toBill() {
+        return new Bill()
+                .setId(id)
+                .setCustomer(customer)
+                .setTotalAmount(totalAmount)
+                ;
+    }
 }

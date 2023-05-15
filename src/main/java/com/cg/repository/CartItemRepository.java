@@ -2,6 +2,7 @@ package com.cg.repository;
 
 import com.cg.model.Cart;
 import com.cg.model.CartItem;
+import com.cg.model.Customer;
 import com.cg.model.Product;
 import com.cg.model.dto.CartItemResDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,6 +30,16 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
 
     Optional<CartItem> findByCartAndProduct(@Param("cart") Cart cart, @Param("product") Product product);
+
+
+    @Query("SELECT ci " +
+            "FROM CartItem AS ci " +
+            "JOIN Cart AS cart " +
+            "ON ci.cart = cart " +
+            "AND ci.cart = :cart " +
+            "AND ci.cart.customer = :customer"
+    )
+    List<CartItem> findAllByCartAndCustomer(@Param("cart") Cart cart, @Param("customer") Customer customer);
 
 
     @Query("SELECT SUM(ci.amount) FROM CartItem AS ci WHERE ci.cart = :cart")

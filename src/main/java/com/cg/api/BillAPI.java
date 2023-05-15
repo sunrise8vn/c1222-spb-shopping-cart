@@ -18,7 +18,7 @@ public class BillAPI {
 
     @Autowired
     private IBillService billService;
-    
+
     @PostMapping("/pay")
     public ResponseEntity<?> pay() {
 
