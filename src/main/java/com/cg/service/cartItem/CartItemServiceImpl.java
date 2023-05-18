@@ -139,6 +139,130 @@ public class CartItemServiceImpl implements ICartItemService {
     }
 
     @Override
+    public CartResDTO minus(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart) {
+        Product product = productRepository.findById(Long.parseLong(cartItemReqDTO.getProductId())).orElseThrow(() -> {
+            throw new DataInputException("Sản phẩm không hợp lệ");
+        });
+
+        Optional<CartItem> cartItemOptional = cartItemRepository.findByCartAndProduct(cart, product);
+
+        if (cartItemOptional.isEmpty()) {
+            throw new DataInputException("Sản phẩm chưa có trong giỏ hàng");
+        }
+        else {
+            CartItem cartItem = cartItemOptional.get();
+            Integer currentQuantity = cartItem.getQuantity();
+
+            if (currentQuantity == 1) {
+                cartItemRepository.delete(cartItem);
+            }
+            else {
+                BigDecimal productPrice = product.getPrice();
+
+                int newQuantity = currentQuantity - Integer.parseInt(cartItemReqDTO.getQuantity());
+                BigDecimal newAmount = productPrice.multiply(BigDecimal.valueOf(newQuantity));
+
+                cartItem.setPrice(productPrice);
+                cartItem.setQuantity(newQuantity);
+                cartItem.setAmount(newAmount);
+                cartItemRepository.save(cartItem);
+            }
+        }
+
+        List<CartItemResDTO> cartItemResDTOS = cartItemRepository.findAllCartItemResDTOByCart(cart);
+
+        BigDecimal totalAmount = cartItemRepository.getSumAmount(cart);
+
+        cart.setTotalAmount(totalAmount);
+        cartRepository.save(cart);
+
+        CartResDTO cartResDTO = new CartResDTO();
+        cartResDTO.setTotalAmount(totalAmount);
+        cartResDTO.setFullName(customer.getFullName());
+        cartResDTO.setItems(cartItemResDTOS);
+
+        return cartResDTO;
+    }
+
+    @Override
+    public CartResDTO changeQuantity(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart) {
+        Product product = productRepository.findById(Long.parseLong(cartItemReqDTO.getProductId())).orElseThrow(() -> {
+            throw new DataInputException("Sản phẩm không hợp lệ");
+        });
+
+        Optional<CartItem> cartItemOptional = cartItemRepository.findByCartAndProduct(cart, product);
+
+        if (cartItemOptional.isEmpty()) {
+            throw new DataInputException("Sản phẩm chưa có trong giỏ hàng");
+        }
+        else {
+            CartItem cartItem = cartItemOptional.get();
+
+            int newQuantity = Integer.parseInt(cartItemReqDTO.getQuantity());
+
+            if (newQuantity == 0) {
+                cartItemRepository.delete(cartItem);
+            }
+            else {
+                BigDecimal productPrice = product.getPrice();
+
+                BigDecimal newAmount = productPrice.multiply(BigDecimal.valueOf(newQuantity));
+
+                cartItem.setPrice(productPrice);
+                cartItem.setQuantity(newQuantity);
+                cartItem.setAmount(newAmount);
+                cartItemRepository.save(cartItem);
+            }
+        }
+
+        List<CartItemResDTO> cartItemResDTOS = cartItemRepository.findAllCartItemResDTOByCart(cart);
+
+        BigDecimal totalAmount = cartItemRepository.getSumAmount(cart);
+
+        cart.setTotalAmount(totalAmount);
+        cartRepository.save(cart);
+
+        CartResDTO cartResDTO = new CartResDTO();
+        cartResDTO.setTotalAmount(totalAmount);
+        cartResDTO.setFullName(customer.getFullName());
+        cartResDTO.setItems(cartItemResDTOS);
+
+        return cartResDTO;
+    }
+
+    @Override
+    public CartResDTO delete(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart) {
+        Product product = productRepository.findById(Long.parseLong(cartItemReqDTO.getProductId())).orElseThrow(() -> {
+            throw new DataInputException("Sản phẩm không hợp lệ");
+        });
+
+        Optional<CartItem> cartItemOptional = cartItemRepository.findByCartAndProduct(cart, product);
+
+        if (cartItemOptional.isEmpty()) {
+            throw new DataInputException("Sản phẩm chưa có trong giỏ hàng");
+        }
+        else {
+            CartItem cartItem = cartItemOptional.get();
+
+            cartItemRepository.delete(cartItem);
+        }
+
+        List<CartItemResDTO> cartItemResDTOS = cartItemRepository.findAllCartItemResDTOByCart(cart);
+
+        BigDecimal totalAmount = cartItemRepository.getSumAmount(cart);
+
+        cart.setTotalAmount(totalAmount);
+        cartRepository.save(cart);
+
+        CartResDTO cartResDTO = new CartResDTO();
+        cartResDTO.setTotalAmount(totalAmount);
+        cartResDTO.setFullName(customer.getFullName());
+        cartResDTO.setItems(cartItemResDTOS);
+
+        return cartResDTO;
+    }
+
+    @Override
     public CartItem save(CartItem cartItem) {
         return null;
     }

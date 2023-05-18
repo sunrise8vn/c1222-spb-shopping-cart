@@ -20,4 +20,10 @@ public interface ICartItemService extends IGeneralService<CartItem, Long> {
     CartResDTO create(CartItemReqDTO cartItemReqDTO, Customer customer);
 
     CartResDTO update(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart);
+
+    CartResDTO minus(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart);
+
+    CartResDTO changeQuantity(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart);
+
+    CartResDTO delete(CartItemReqDTO cartItemReqDTO, Customer customer, Cart cart);
 }

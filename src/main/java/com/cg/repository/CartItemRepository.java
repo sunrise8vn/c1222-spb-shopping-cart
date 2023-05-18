@@ -19,6 +19,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     @Query("SELECT NEW com.cg.model.dto.CartItemResDTO (" +
                 "ci.id, " +
+                "ci.product.id, " +
                 "ci.product.title, " +
                 "ci.price, " +
                 "ci.quantity, " +

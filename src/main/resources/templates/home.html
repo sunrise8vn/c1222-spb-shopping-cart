@@ -157,6 +157,9 @@
             getAllCartItems: AppBase.API_CART,
             checkout: AppBase.API_CART + '/pay',
             addCartItem: AppBase.API_CART + '/add-item',
+            minusCartItem: AppBase.API_CART + '/minus-item',
+            changeQuantityCartItem: AppBase.API_CART + '/change-quantity-item',
+            deleteCartItem: AppBase.API_CART + '/delete-item',
             saveNewProduct: AppBase.API_PRODUCT
         },
         elements: {},
@@ -229,6 +232,43 @@
         })
     }
 
+
+    page.commands.minusCartItem = (obj) => {
+        return $.ajax({
+            type: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            url: page.urls.minusCartItem,
+            data: JSON.stringify(obj)
+        })
+    }
+
+    page.commands.changeQuantityCartItem = (obj) => {
+        return $.ajax({
+            type: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            url: page.urls.changeQuantityCartItem,
+            data: JSON.stringify(obj)
+        })
+    }
+
+    page.commands.deleteCartItem = (obj) => {
+        return $.ajax({
+            type: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            url: page.urls.deleteCartItem,
+            data: JSON.stringify(obj)
+        })
+    }
+
     page.commands.handleShowCart = () => {
         page.elements.btnShowCart.on('click', () => {
 
@@ -237,17 +277,167 @@
             if(!isOpenCart) {
                 page.commands.getAllCartItems().then((data) => {
                     let items = data.items;
-                    console.log(items)
+
                     $('#cart-view-line').empty();
 
                     $.each(items, (index, item) => {
                         let str = AppBase.renderCartItem(item);
                         $('#cart-view-line').append(str);
                     })
+
+                    $('#total-view-cart').text(data.totalAmount + ' đ');
+
+                    page.commands.handleAddQuantity();
+
+                    page.commands.handleMinusQuantity();
+
+                    page.commands.handleChangeQuantity();
                 });
             }
 
             isOpenCart = !isOpenCart;
+        })
+    }
+
+    page.commands.handleAddQuantity = () => {
+        $('.cart-add-quantity').on('click', function () {
+            let productId = $(this).data('id');
+            let obj = {
+                productId,
+                quantity: 1
+            }
+
+            page.commands.addCartItem(obj)
+                .then((data) => {
+                    let items = data.items;
+
+                    $('#cart-view-line').empty();
+
+                    $.each(items, (index, item) => {
+                        let str = AppBase.renderCartItem(item);
+                        $('#cart-view-line').append(str);
+                    })
+
+                    $('#total-view-cart').text(data.totalAmount + ' đ');
+
+                    page.commands.handleAddQuantity();
+
+                    page.commands.handleMinusQuantity();
+
+                    page.commands.handleChangeQuantity();
+
+                    AppBase.IziToast.showSuccessAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thành công')
+                })
+                .catch(() => {
+                    AppBase.IziToast.showErrorAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thất bại');
+                });
+        })
+    }
+
+    page.commands.handleMinusQuantity = () => {
+        $('.cart-minus-quantity').on('click', function () {
+            let productId = $(this).data('id');
+            let obj = {
+                productId,
+                quantity: 1
+            }
+
+            page.commands.minusCartItem(obj)
+                .then((data) => {
+                    let items = data.items;
+
+                    $('#cart-view-line').empty();
+
+                    $.each(items, (index, item) => {
+                        let str = AppBase.renderCartItem(item);
+                        $('#cart-view-line').append(str);
+                    })
+
+                    $('#total-view-cart').text(data.totalAmount + ' đ');
+
+                    page.commands.handleAddQuantity();
+
+                    page.commands.handleMinusQuantity();
+
+                    page.commands.handleChangeQuantity();
+
+                    AppBase.IziToast.showSuccessAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thành công')
+                })
+                .catch(() => {
+                    AppBase.IziToast.showErrorAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thất bại');
+                });
+        })
+    }
+
+    page.commands.handleChangeQuantity = () => {
+        $('.cart-quantity').on('change', function (e) {
+            let quantity = +e.target.value;
+
+            let productId = $(this).data('id');
+
+            let obj = {
+                productId,
+                quantity: 0
+            }
+
+            if (quantity <= 0 || isNaN(quantity)) {
+                AppBase.showDeleteCartItemConfirmDialog().then((result) => {
+                    if (result.isConfirmed) {
+                        page.commands.deleteCartItem(obj)
+                            .then((data) => {
+                                let items = data.items;
+
+                                $('#cart-view-line').empty();
+
+                                $.each(items, (index, item) => {
+                                    let str = AppBase.renderCartItem(item);
+                                    $('#cart-view-line').append(str);
+                                })
+
+                                $('#total-view-cart').text(data.totalAmount + ' đ');
+
+                                page.commands.handleAddQuantity();
+
+                                page.commands.handleMinusQuantity();
+
+                                page.commands.handleChangeQuantity();
+
+                                AppBase.IziToast.showSuccessAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thành công')
+                            })
+                            .catch(() => {
+                                AppBase.IziToast.showErrorAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thất bại');
+                            });
+                    }
+                });
+            }
+            else {
+                page.commands.changeQuantityCartItem(obj)
+                    .then((data) => {
+                        let items = data.items;
+
+                        $('#cart-view-line').empty();
+
+                        $.each(items, (index, item) => {
+                            let str = AppBase.renderCartItem(item);
+                            $('#cart-view-line').append(str);
+                        })
+
+                        $('#total-view-cart').text(data.totalAmount + ' đ');
+
+                        page.commands.handleAddQuantity();
+
+                        page.commands.handleMinusQuantity();
+
+                        page.commands.handleChangeQuantity();
+
+                        AppBase.IziToast.showSuccessAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thành công')
+                    })
+                    .catch(() => {
+                        AppBase.IziToast.showErrorAlert('Cập nhật số lượng sản phẩm trong giỏ hàng thất bại');
+                    });
+            }
+
+
         })
     }
 

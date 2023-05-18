@@ -65,7 +65,7 @@ class AppBase {
         static showSuccessAlert(m) {
             iziToast.success({
                 title: 'OK',
-                position: 'topRight',
+                position: 'bottomRight',
                 timeout: 2500,
                 message: m
             });
@@ -90,6 +90,18 @@ class AppBase {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, please suspend this client !',
             cancelButtonText: 'Cancel',
+        })
+    }
+
+    static showDeleteCartItemConfirmDialog() {
+        return Swal.fire({
+            icon: 'warning',
+            text: 'Bạn muốn xóa sản phẩm này ?',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Không xóa',
         })
     }
 
@@ -220,9 +232,9 @@ class AppBase {
                     <h3 class="subtitle">$${item.price}</h3>
                 </div>
                 <div class="counter">
-                    <div class="cart-btn">+</div>
-                    <div class="count">${item.quantity}</div>
-                    <div class="cart-btn">-</div>
+                    <div class="cart-btn cart-add-quantity" data-id="${item.productId}">+</div>
+                    <div class="count"><input type="text" class="cart-quantity" data-id="${item.productId}" value="${item.quantity}" /></div>
+                    <div class="cart-btn cart-minus-quantity" data-id="${item.productId}">-</div>
                 </div>
                 <div class="prices">
                     <div class="amount">$${item.amount}</div>

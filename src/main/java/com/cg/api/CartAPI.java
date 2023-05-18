@@ -108,7 +108,99 @@ public class CartAPI {
             CartResDTO cartResDTO = cartItemService.update(cartItemReqDTO, customer, cartOptional.get());
             return new ResponseEntity<>(cartResDTO, HttpStatus.OK);
         }
+    }
 
+    @PostMapping("/minus-item")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    public ResponseEntity<?> minusItem(@RequestBody CartItemReqDTO cartItemReqDTO, BindingResult bindingResult) {
+
+        new CartItemReqDTO().validate(cartItemReqDTO, bindingResult);
+
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+        String username = appUtils.getPrincipalUsername();
+
+        User user = userService.findByUsername(username).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Customer customer = customerService.findByUser(user).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Optional<Cart> cartOptional = cartService.findByCustomer(customer);
+
+        if (cartOptional.isEmpty()) {
+            throw new DataInputException("Bạn chưa có giỏ hàng");
+        }
+        else {
+            CartResDTO cartResDTO = cartItemService.minus(cartItemReqDTO, customer, cartOptional.get());
+            return new ResponseEntity<>(cartResDTO, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/change-quantity-item")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    public ResponseEntity<?> chagneQuantityItem(@RequestBody CartItemReqDTO cartItemReqDTO, BindingResult bindingResult) {
+
+        new CartItemReqDTO().validate(cartItemReqDTO, bindingResult);
+
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+        String username = appUtils.getPrincipalUsername();
+
+        User user = userService.findByUsername(username).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Customer customer = customerService.findByUser(user).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Optional<Cart> cartOptional = cartService.findByCustomer(customer);
+
+        if (cartOptional.isEmpty()) {
+            throw new DataInputException("Bạn chưa có giỏ hàng");
+        }
+        else {
+            CartResDTO cartResDTO = cartItemService.changeQuantity(cartItemReqDTO, customer, cartOptional.get());
+            return new ResponseEntity<>(cartResDTO, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/delete-item")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
+    public ResponseEntity<?> deleteItem(@RequestBody CartItemReqDTO cartItemReqDTO, BindingResult bindingResult) {
+
+        new CartItemReqDTO().validate(cartItemReqDTO, bindingResult);
+
+        if (bindingResult.hasFieldErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
+
+        String username = appUtils.getPrincipalUsername();
+
+        User user = userService.findByUsername(username).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Customer customer = customerService.findByUser(user).orElseThrow(() -> {
+            throw new UnauthorizedException("Bạn chưa xác thực");
+        });
+
+        Optional<Cart> cartOptional = cartService.findByCustomer(customer);
+
+        if (cartOptional.isEmpty()) {
+            throw new DataInputException("Bạn chưa có giỏ hàng");
+        }
+        else {
+            CartResDTO cartResDTO = cartItemService.delete(cartItemReqDTO, customer, cartOptional.get());
+            return new ResponseEntity<>(cartResDTO, HttpStatus.OK);
+        }
     }
 
     @PostMapping("/pay")
